@@ -1,153 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Styde.net | Curso de VueJS</title>
+    <title>Styde.net | Curso de VueJS</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 
     <script src="vue.js"></script>
 
-    </head>
-    <body id="app">
+</head>
+<body id="app">
 
-    <div class="row">
-        <div class="col-md-6 col-md-offset-3">
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
 
-            <template v-if="name">
-                <h1>
-                    {{ welcome_message }}, {{ name }}
-                </h1>
+        <template v-if="name">
+            <h1>
+                {{ welcome_message }}, {{ name }}
+            </h1>
 
-                <p>Espero que disfrutes tu visita</p>
-                <p>Tu nombre al revés es: {{ name.split('').reverse().join('') }}
+            <p>Espero que disfrutes tu visita</p>
+            <p>Tu nombre al revés es: {{ nombre_inverso }}
+        </template>
+        <p v-else>Por favor escribe tu nombre:</p>
+
+        <form @submit="signUp(false, $event)">
+            <label>Primer nombre:</label>
+            <input type="text" v-model="first_name" class="form-control">
+            <label>Apellido: </label>
+            <input type="text" v-model="last_name" class="form-control">
+
+            <p v-if="name == ''" class="alert alert-danger">
+                Este campo es obligatorio
+            </p>
+
+            <label>
+                Hombre: <input type="radio" v-model="gender" value="m">
+            </label>
+
+            <label>
+                Mujer: <input type="radio" v-model="gender" value="f">
+            </label>
+
+            <label>
+                ¿Hablas español?
+                <input v-model="spanish" type="checkbox">
+            </label>
+
+            <template v-for="tech in techs">
+                <years-exp :years.sync="tech.years" :tech.sync="tech.name" :nivel.sync="nombre_inverso"></years-exp>{{ descripcion_years }}
             </template>
-            <p v-else>Por favor escribe tu nombre:</p>
-
-            <form @submit="signUp(false, $event)">
-                <label>Primer nombre:</label>
-                <input type="text" v-model="first_name" class="form-control">
-                <label>Apellido: </label>
-                <input type="text" v-model="last_name" class="form-control">
-
-                <p v-if="name == ''" class="alert alert-danger">
-                    Este campo es obligatorio
-                </p>
-
-                <label>
-                    Hombre: <input type="radio" v-model="gender" value="m">
-                </label>
-
-                <label>
-                    Mujer: <input type="radio" v-model="gender" value="f">
-                </label>
-
-                <label>
-                    ¿Hablas español? 
-                    <input v-model="spanish" type="checkbox">
-                </label>
-
-                <template v-for="tech in techs">
-                    <years-exp :years="tech.years" :tech="tech.name"></years-exp>
-                </template>
-
-                <hr>
-
-                <p v-show="name">
-                    <button type="submit" class="btn btn-primary">
-                        Regístrate
-                    </button>
-
-                    <button type="submit" class="btn btn-primary" @click="signUp(true, $event)">
-                        Regístrate y sal del sistema
-                    </button>
-                </p>
-            </form>
 
             <hr>
 
-            <pre>{{ $data | json }}</pre>
-        </div>
+            <p v-show="name">
+                <button type="submit" class="btn btn-primary">
+                    Regístrate
+                </button>
+
+                <button type="submit" class="btn btn-primary" @click="signUp(true, $event)">
+                    Regístrate y sal del sistema
+                </button>
+            </p>
+        </form>
+
+        <hr>
+
+        <pre>{{ $data | json }}</pre>
     </div>
+</div>
 
-    <script type="text/template" id="years_template">
-        <p>¿Cuántos años de experiencia tienes con {{ tech }}?</p>
+<script type="text/template" id="years_template">
+    <p>¿Cuántos años de experiencia tienes con {{ tech }}?</p>
 
-        <p>
-            Respuesta: <strong>{{ years }}</strong>
+    <p>
+        Respuesta: <strong>{{ years }}</strong>
 
-            <button type="button"
-                    class="btn"
-                    @click="add">+</button>
+        <button type="button"
+                class="btn"
+                @click="add">+</button>
 
-            <button type="button"
-                    :disabled="years == 0"
-                    class="btn"
-                    @click="sub">-</button>
-        </p>
-    </script>
+        <button type="button"
+                :disabled="years == 0"
+                class="btn"
+                @click="sub">-</button>
 
-    <script type="text/javascript">
 
-        Vue.component('years-exp', {
-            template: '#years_template',
-            methods: {
-                add: function () {
-                    this.years++;
-                },
-                sub: function () {
-                    this.years--;
-                },
+    </p>
+
+</script>
+
+<script type="text/javascript">
+
+    Vue.component('years-exp', {
+        template: '#years_template',
+        methods: {
+            add: function () {
+                this.years++;
+                if(this.years > 2){
+                    this.spanish = true;
+                }
             },
-            props: ['years', 'tech']
-        });
-
-        new Vue({
-            el: "#app",
-            data: {
-                first_name: '',
-                last_name: '',
-                gender: 'm',
-                spanish: true,
-                techs: [
-                    {name: 'PHP', years: 0},
-                    {name: 'JS', years: 0},
-                ]
+            sub: function () {
+                this.years--;
             },
-            computed: {
-                welcome_message: function () {
+        },
+        props: ['years', 'tech', 'nivel']
+    });
 
-                    if (this.spanish) {
-                        return this.gender == 'm' ? 'Bienvenido' : 'Bienvenida';    
-                    }
+    new Vue({
+        el: "#app",
+        data: {
+            first_name: '',
+            last_name: '',
+            gender: 'm',
+            spanish: true,
+            nivel: '',
+            techs: [
+                {name: 'PHP', years: 0},
+                {name: 'JS', years: 0},
+            ]
+        },
+        computed: {
+            welcome_message: function () {
 
-                    return 'Welcome';
-                },
-                name: function () {
-                    if (this.first_name || this.last_name) {
-                        return this.first_name + ' ' + this.last_name;
-                    }
-                    
-                    return '';
-                } 
+                if (this.spanish) {
+                    return this.gender == 'm' ? 'Bienvenido' : 'Bienvenida';
+                }
+
+                return 'Welcome';
             },
-            methods: {
-                signUp: function (logout, event) {
-                    event.preventDefault();
+            name: function () {
+                if (this.first_name || this.last_name) {
+                    return this.first_name + ' ' + this.last_name;
+                }
 
-                    alert(this.name + ', por favor espera mientras te registramos.');
+                return '';
+            } ,
 
-                    if (logout) {
-                        alert("Saliendo del sistema...");
-                    }
-                },
+            nombre_inverso: function () {
+                return this.name.split('').reverse().join('');
+            },
+
+            descripcion_years: function () {
+                if (this.years <= 2){
+                    return "Principiante";
+                }else if (this.years <=4 ){
+                    return "Intermedio";
+                }else if (this.years >= 5){
+                    return "Experto";
+                }else{
+                    return "";
+                }
             }
-        });
-    </script>
-    </body>
+        },
+        methods: {
+            signUp: function (logout, event) {
+                event.preventDefault();
+
+                alert(this.name + ', por favor espera mientras te registramos.');
+
+                if (logout) {
+                    alert("Saliendo del sistema...");
+                }
+            },
+        }
+    });
+</script>
+</body>
 </html>
 
 
